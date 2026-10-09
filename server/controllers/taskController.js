@@ -14,8 +14,41 @@ exports.createTask = async (req, res) => {
 
 exports.getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.userId }).sort({ createdAt: -1 });
-    res.json(tasks);
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 50);
+
+    const filter = { user: req.userId };
+
+    if (req.query.status) {
+      filter.status = req.query.status;
+    }
+
+    if (req.query.search) {
+      const safe = req.query.search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      filter.title = { $regex: safe, $options: "i" };
+    }
+
+    const allowedSort = ["createdAt", "title", "status"];
+    const sortBy = allowedSort.includes(req.query.sortBy)
+      ? req.query.sortBy
+      : "createdAt";
+    const order = req.query.order === "asc" ? 1 : -1;
+
+    const [tasks, total] = await Promise.all([
+      Task.find(filter)
+        .sort({ [sortBy]: order })
+        .skip((page - 1) * limit)
+        .limit(limit),
+      Task.countDocuments(filter),
+    ]);
+
+    res.json({
+      tasks,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error" });
   }
