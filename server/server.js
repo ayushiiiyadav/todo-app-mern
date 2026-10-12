@@ -1,11 +1,14 @@
-require("dns").setServers(["8.8.8.8", "8.8.4.4"]);
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+
 const app = express();
-  app.use(express.json());
-  app.use("/api/tasks", require("./routes/taskRoutes"));
-  app.use("/api/auth", require("./routes/authroutes"));
+
+app.use(cors());
+app.use(express.json());
+app.use("/api/tasks", require("./routes/taskRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
 
 app.get("/", (req, res) => {
   res.send("Hello, my server is working!");
