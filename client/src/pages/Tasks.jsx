@@ -3,18 +3,47 @@ import { useNavigate } from "react-router-dom";
 import api from "../api.js";
 
 const STATUSES = ["pending", "in-progress", "completed"];
+const PAGE_SIZE = 5;
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState("");
   const [error, setError] = useState("");
+
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [sortBy, setSortBy] = useState("createdAt");
+  const [order, setOrder] = useState("desc");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   const loadTasks = async () => {
     try {
-      const res = await api.get("/tasks");
-      setTasks(res.data.tasks ?? res.data);
+      const res = await api.get("/tasks", {
+        params: {
+          page,
+          limit: PAGE_SIZE,
+          status: statusFilter || undefined,
+          search: search || undefined,
+          sortBy,
+          order,
+        },
+      });
+      setTasks(res.data.tasks);
+      setTotalPages(res.data.totalPages || 1);
+
+      if (res.data.tasks.length === 0 && page > 1) {
+        setPage(page - 1);
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         logout();
@@ -26,7 +55,7 @@ export default function Tasks() {
 
   useEffect(() => {
     loadTasks();
-  }, []);
+  }, [page, statusFilter, search, sortBy, order]);
 
   const addTask = async (e) => {
     e.preventDefault();
@@ -59,12 +88,6 @@ export default function Tasks() {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
-
   return (
     <div className="tasks-page">
       <header className="tasks-header">
@@ -88,10 +111,50 @@ export default function Tasks() {
         <button type="submit">Add</button>
       </form>
 
+      <div className="filter-row">
+        <input
+          type="text"
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+        />
+        <select
+          value={statusFilter}
+          onChange={(e) => {
+            setStatusFilter(e.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All statuses</option>
+          {STATUSES.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <select
+          value={`${sortBy}:${order}`}
+          onChange={(e) => {
+            const [by, ord] = e.target.value.split(":");
+            setSortBy(by);
+            setOrder(ord);
+            setPage(1);
+          }}
+        >
+          <option value="createdAt:desc">Newest first</option>
+          <option value="createdAt:asc">Oldest first</option>
+          <option value="title:asc">Title A to Z</option>
+          <option value="title:desc">Title Z to A</option>
+        </select>
+      </div>
+
       {error && <p className="error">{error}</p>}
 
       {tasks.length === 0 ? (
-        <p className="empty">No tasks yet. Add something fresh to do ☁️</p>
+        <p className="empty">No tasks found ☁️</p>
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
@@ -121,6 +184,26 @@ export default function Tasks() {
           ))}
         </ul>
       )}
+
+      <div className="pagination">
+        <button
+          className="small-btn"
+          disabled={page <= 1}
+          onClick={() => setPage(page - 1)}
+        >
+          Previous
+        </button>
+        <span>
+          Page {page} of {totalPages}
+        </span>
+        <button
+          className="small-btn"
+          disabled={page >= totalPages}
+          onClick={() => setPage(page + 1)}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }

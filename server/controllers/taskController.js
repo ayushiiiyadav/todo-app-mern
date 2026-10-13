@@ -53,7 +53,6 @@ exports.getTasks = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
 exports.updateTask = async (req, res) => {
   try {
     const updates = {};
