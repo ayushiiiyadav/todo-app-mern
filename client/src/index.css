@@ -242,3 +242,69 @@ body {
   margin: 0;
   color: #b07a93;
 }
+.stats-bar {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 96px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid #f4a6c0;
+  border-radius: 999px;
+}
+
+.stat-pill.done-pill {
+  border-color: #9fd8d0;
+}
+
+.stat-num {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #d6336c;
+}
+
+.done-pill .stat-num {
+  color: #2f9e8f;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #7a3b55;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 999px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #7a3b55;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: white;
+  color: #d6336c;
+  box-shadow: 0 3px 10px rgba(214, 51, 108, 0.15);
+}

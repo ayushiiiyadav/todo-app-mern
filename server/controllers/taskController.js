@@ -84,3 +84,14 @@ exports.deleteTask = async (req, res) => {
     res.status(400).json({ message: "Invalid task id" });
   }
 };
+exports.getStats = async (req, res) => {
+  try {
+    const [total, done] = await Promise.all([
+      Task.countDocuments({ user: req.userId }),
+      Task.countDocuments({ user: req.userId, status: "completed" }),
+    ]);
+    res.json({ total, active: total - done, done });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

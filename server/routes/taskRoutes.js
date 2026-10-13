@@ -3,6 +3,7 @@ const protect = require("../middleware/auth");
 const {
   createTask,
   getTasks,
+  getStats,
   updateTask,
   deleteTask,
 } = require("../controllers/taskController");
@@ -13,6 +14,7 @@ router.use(protect);
 
 router.post("/", createTask);
 router.get("/", getTasks);
+router.get("/stats", getStats);
 router.put("/:id", updateTask);
 router.delete("/:id", deleteTask);
 

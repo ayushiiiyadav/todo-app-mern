@@ -16,6 +16,7 @@ export default function Tasks() {
   const [order, setOrder] = useState("desc");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [stats, setStats] = useState({ total: 0, active: 0, done: 0 });
 
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -40,6 +41,7 @@ export default function Tasks() {
       });
       setTasks(res.data.tasks);
       setTotalPages(res.data.totalPages || 1);
+      loadStats();
 
       if (res.data.tasks.length === 0 && page > 1) {
         setPage(page - 1);
@@ -52,6 +54,15 @@ export default function Tasks() {
       }
     }
   };
+
+  const loadStats = async () => {
+  try {
+    const res = await api.get("/tasks/stats");
+    setStats(res.data);
+  } catch (err) {
+    // ignore, the pills will just show old numbers
+  }
+};
 
   useEffect(() => {
     loadTasks();
@@ -105,6 +116,21 @@ export default function Tasks() {
   </div>
 </header>
 
+<div className="stats-bar">
+  <div className="stat-pill">
+    <span className="stat-num">{stats.total}</span>
+    <span className="stat-label">Total</span>
+  </div>
+  <div className="stat-pill active-pill">
+    <span className="stat-num">{stats.active}</span>
+    <span className="stat-label">Active</span>
+  </div>
+  <div className="stat-pill done-pill">
+    <span className="stat-num">{stats.done}</span>
+    <span className="stat-label">Done</span>
+  </div>
+</div>
+
       <form className="add-row" onSubmit={addTask}>
         <input
           type="text"
@@ -116,6 +142,26 @@ export default function Tasks() {
         <button type="submit">Add</button>
       </form>
 
+<div className="filter-tabs">
+  {[
+    ["", "All"],
+    ["pending", "Pending"],
+    ["in-progress", "In progress"],
+    ["completed", "Completed"],
+  ].map(([value, label]) => (
+    <button
+      key={label}
+      className={`tab ${statusFilter === value ? "active" : ""}`}
+      onClick={() => {
+        setStatusFilter(value);
+        setPage(1);
+      }}
+    >
+      {label}
+    </button>
+  ))}
+</div>
+
       <div className="filter-row">
         <input
           type="text"
@@ -126,20 +172,7 @@ export default function Tasks() {
             setPage(1);
           }}
         />
-        <select
-          value={statusFilter}
-          onChange={(e) => {
-            setStatusFilter(e.target.value);
-            setPage(1);
-          }}
-        >
-          <option value="">All statuses</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
+        
         <select
           value={`${sortBy}:${order}`}
           onChange={(e) => {
