@@ -91,14 +91,19 @@ export default function Tasks() {
   return (
     <div className="tasks-page">
       <header className="tasks-header">
-        <h1>To-Do list 🍓</h1>
-        <div>
-          <span>Hi {user.name}</span>
-          <button className="small-btn" onClick={logout}>
-            Log out
-          </button>
-        </div>
-      </header>
+  <div className="title-row">
+    <span>🍓</span>
+    <h1>To-Do list</h1>
+    <span>🌸</span>
+  </div>
+  <p className="subtitle">stay productive ✨</p>
+  <div className="user-box">
+    <span>Hi {user.name}</span>
+    <button className="small-btn" onClick={logout}>
+      Log out
+    </button>
+  </div>
+</header>
 
       <form className="add-row" onSubmit={addTask}>
         <input
@@ -154,7 +159,11 @@ export default function Tasks() {
       {error && <p className="error">{error}</p>}
 
       {tasks.length === 0 ? (
-        <p className="empty">No tasks found ☁️</p>
+        <div className="empty-state">
+        <div className="empty-mascot">🍓</div>
+        <p className="empty-title">No tasks yet!</p>
+        <p className="empty-sub">Add something fresh to do ☁️</p>
+       </div>
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
