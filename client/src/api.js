@@ -1,11 +1,15 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+import axios from "axios";
 
-const app = express();
+const api = axios.create({
+  baseURL: "http://localhost:5000/api",
+});
 
-app.use(cors());
-app.use(express.json());
-app.use("/api/tasks", require("./routes/taskRoutes"));
-app.use("/api/auth", require("./routes/authRoutes"));
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export default api;
