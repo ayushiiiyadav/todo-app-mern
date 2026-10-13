@@ -162,3 +162,41 @@ body {
   color: #777;
   margin-top: 40px;
 }
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-row input {
+  flex: 1;
+  min-width: 160px;
+  padding: 10px 14px;
+  border: 1px solid #f0c0d0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+.filter-row select {
+  padding: 10px 12px;
+  border: 1px solid #f0c0d0;
+  border-radius: 12px;
+  background: white;
+  font-size: 0.95rem;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 20px;
+  color: #555;
+}
+
+.small-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
