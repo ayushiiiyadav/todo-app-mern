@@ -77,7 +77,7 @@ export default function Tasks() {
       setTitle("");
       loadTasks();
     } catch (err) {
-      setError(err.response?.data?.message || "Could not add task");
+      setError(errorMessage(err, "Could not add task"));
     }
   };
 
@@ -86,7 +86,7 @@ export default function Tasks() {
       await api.put(`/tasks/${id}`, { status });
       loadTasks();
     } catch (err) {
-      setError(err.response?.data?.message || "Could not update task");
+      setError(errorMessage(err, "Could not update task"));
     }
   };
 
@@ -95,7 +95,7 @@ export default function Tasks() {
       await api.delete(`/tasks/${id}`);
       loadTasks();
     } catch (err) {
-      setError(err.response?.data?.message || "Could not delete task");
+      setError(errorMessage(err, "Could not delete task"));
     }
   };
 
